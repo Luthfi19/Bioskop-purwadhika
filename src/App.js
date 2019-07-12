@@ -9,12 +9,13 @@ import SeatRes from './pages/seatReservation'
 import PageNotFound from './pages/pageNotFound'
 import Cart from './pages/cart'
 import Checkout from './pages/checkout'
+import History from './pages/historyTransaction'
 import { Route , Switch} from 'react-router-dom'
 
 import './App.css';
 import Axios from 'axios';
 import {ApiURL} from './supports/ApiURL'
-import {OnRegisterSuccess} from './redux/actions'
+import {OnRegisterSuccess , OnLoginAdmin} from './redux/actions'
 import {connect} from 'react-redux'
 
 class App extends React.Component {
@@ -23,8 +24,13 @@ class App extends React.Component {
     if(username !== null){
       Axios.get(ApiURL + '/users?username=' + username)
       .then((res) =>{
-        console.log(res.data)
-        this.props.OnRegisterSuccess(res.data[0])
+        if(res.data[0].role === 'user'){
+          console.log(res.data)
+          this.props.OnRegisterSuccess(res.data[0])
+        }else{
+          console.log(res.data)
+          this.props.OnLoginAdmin(res.data[0])
+        }
       })
     }
   }
@@ -32,6 +38,7 @@ class App extends React.Component {
     if(this.props.user === '' && localStorage.getItem('terserah' !== null)){
       return (<p> Loading ... </p>)
     }
+    if(this.props.isAdmin === true){
     return (
     <div>
       <Header/>
@@ -47,14 +54,33 @@ class App extends React.Component {
       <Route path='*' component= {PageNotFound} />
       </Switch>
     </div>
+    )
+  }else{
+    return(
+      <div>
+      <Header/>
+      <Switch>
+      <Route exact path='/' component= {MovieList} />
+      <Route path='/moviedetail' component= {MovieDetail} />
+      <Route path='/register' component= {Register} />
+      <Route path='/login' component= {Login} />
+      <Route path='/seat-order' component= {SeatRes} />
+      <Route path='/cart' component= {Cart} />
+      <Route path='/checkout' component={Checkout}/>
+      <Route path='/history' component={History}/>
+      <Route path='*' component= {PageNotFound} />
+      </Switch>
+    </div>
     );
+  }
   }
 }
 
 const mapStateToProps = (state) => {
   return{
-    user : state.user.username
+    user : state.user.username,
+    isAdmin : state.user.isAdmin
   }
 }
 
-export default connect(mapStateToProps, {OnRegisterSuccess})(App);
+export default connect(mapStateToProps, {OnRegisterSuccess, OnLoginAdmin})(App);

@@ -5,6 +5,13 @@ export const OnRegisterSuccess = (data) => {
     }
 }
 
+export const OnLoginAdmin = (data) => {
+    return{
+        type :'ADMIN_SUCCESS',
+        payload : data 
+    }
+}
+
 export const onLogout = () => {
     return{
         type: 'LOG_OUT'

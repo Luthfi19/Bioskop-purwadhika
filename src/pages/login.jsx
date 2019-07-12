@@ -3,8 +3,9 @@ import { Paper } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import {connect} from 'react-redux'
 import Axios from 'axios'
-import {OnRegisterSuccess} from './../redux/actions'
+import {OnRegisterSuccess, OnLoginAdmin} from './../redux/actions'
 import {Redirect} from 'react-router-dom'
+import { Modal, ModalBody, ModalHeader} from 'reactstrap'
 import { ApiURL } from '../supports/ApiURL';
 //Ambil value dari input user
 //validasi inputan
@@ -14,21 +15,41 @@ import { ApiURL } from '../supports/ApiURL';
 //apabila berhasil login, taruh data di global state, dan username di localStorage
 
 class Login extends Component {
+    state = {errormsg : '', modalOpen : false}
     onBtnLoginClick = () => {
         var name = this.refs.username.value
         var pass = this.refs.password.value
         if(name === '' || pass === ''){
-            alert('Form is not completed')
+            this.setState({
+                modalOpen : true,
+                errormsg : 'Form should be compeleted'
+            })
         }else{
             Axios.get(ApiURL + '/users?username=' + name + '&password=' + pass)
             .then((res) =>{
                if(res.data.length === 0){
-                   alert('Password or Username Invalid')
-               }else{
-                   this.props.OnRegisterSuccess(res.data[0])
-                   localStorage.setItem('terserah' , name)
-               }
-            })
+                this.setState({
+                    modalOpen : true,
+                    errormsg : 'Password or Username Invalid'
+                })
+               }else {
+                 this.setState({
+                    redirect : true,
+                    
+                })
+               
+                if(res.data[0].role === 'admin'){
+                    this.props.OnLoginAdmin(res.data[0])
+                    localStorage.setItem('terserah', name)
+                    console.log(this.props.OnLoginAdmin(res.data[0]))
+                }else{
+                    this.props.OnRegisterSuccess(res.data[0])
+                    localStorage.setItem('terserah', name)
+                    console.log(this.props.OnRegisterSuccess(res.data[0]))
+                }
+            }
+        })
+            
             .catch((err) =>{
                 console.log(err)
             })
@@ -41,7 +62,16 @@ class Login extends Component {
             )
         }
         return(
-            <div className='container'> 
+            <div className='container'>
+                <Modal isOpen={this.state.modalOpen} size="lg" style={{maxWidth: '700px', width: '40%'}} toggle={()=> this.setState({modalOpen : false})}>
+                        <ModalHeader>
+                            Error 
+                        </ModalHeader>
+                        <ModalBody>
+                            <h5>{this.state.errormsg}</h5>
+                        </ModalBody>
+            
+                </Modal> 
                 <div className='row justify-content-center mt-5'>
                     <div className='col-md-4'>
                         <Paper className='p-5'>
@@ -57,8 +87,12 @@ class Login extends Component {
                                 Register Now 
                             </span>
                             </Link>
-
                         </p>
+                        {/* <div class="alert alert-success alert-dismissible">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            Password or Username Invalid
+                        </div> */}
+                            
                     </div>
                 </div>
             </div>    
@@ -68,8 +102,9 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
     return{
-        username : state.user.username
+        username : state.user.username,
+       
     }
 }
 
-export default connect(mapStateToProps,{OnRegisterSuccess}) (Login)
+export default connect(mapStateToProps,{OnRegisterSuccess, OnLoginAdmin}) (Login)

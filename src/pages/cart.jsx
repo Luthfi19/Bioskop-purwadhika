@@ -81,7 +81,7 @@ class manageCart extends React.Component{
                 </div>
                 <div className='mb-5'style={{display:'flex' ,color:'white',display: 'flex',alignItems: 'center',justifyContent: 'center'}}>
                     <Link to='/'>
-                        <input type='button' className='btn btn-outline-primary mt-5' value='Proceed to Checkout' onClick={this.onClickCheckOut}/>
+                        <input type='button' className='btn btn-primary mt-5' value='Checkout' onClick={this.onClickCheckOut}/>
                     </Link>
                 
                 </div>

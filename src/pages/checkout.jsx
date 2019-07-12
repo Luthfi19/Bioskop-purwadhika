@@ -1,11 +1,10 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
-import {Table, TableBody, TableCell, TableRow, TableHead, TableFooter, Paper ,Container} from '@material-ui/core/'
+import {TableBody, TableCell, TableHead, TableFooter, Paper} from '@material-ui/core/'
 import Numeral from 'numeral'
 import { connect } from 'react-redux';
 
 
-class Checkout extends React.Component{
+class checkoutOrder extends React.Component{
     state={
         scr : ''
     }
@@ -67,4 +66,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(Checkout)
+export default connect(mapStateToProps)(checkoutOrder)

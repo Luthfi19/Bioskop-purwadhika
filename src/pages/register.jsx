@@ -18,7 +18,8 @@ import Axios from 'axios';
 class Register extends Component {
     state = {
         error : '',
-        loading : false
+        loading : false,
+        userdata : []
     }
 
     onBtnClickRegister = () => {
@@ -36,20 +37,29 @@ class Register extends Component {
                 Axios.get('http://localhost:2000/users?username=' + username)
                 .then((res) =>{
                     if(res.data.length > 0){
-                        this.setState({error : 'Username has been taken' , loading: false})
-                    }else{
-                        var obj = {username : username , password : password}
-                        Axios.post('http://localhost:2000/users', obj)
-                        .then((res) =>{
-                            this.props.OnRegisterSuccess(res.data)
-                            localStorage.setItem('terserah' , res.data.username)
+                        this.setState({error : 'The username has been taken'})
+                    }else {
+                        Axios.post('http://localhost:2000/users' , {
+                            username,
+                            password,
+                            saldo : 0,
+                            transaction : [],
+                            cart:[],
+                            role:'user',
+                            history:[]
                         })
-                        .catch((err) =>{
+                        .then((res) => {
+                            console.log(res.data)
+                            this.props.OnRegisterSuccess(res.data)
+                            localStorage.setItem('terserah', res.data.username)
+                        })
+                        .catch((err) => {
                             console.log(err)
                         })
                     }
+                    
                 })
-                .catch((err) =>{
+                .catch((err) => {
                     console.log(err)
                 })
             }
